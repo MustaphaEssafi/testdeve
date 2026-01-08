@@ -47,7 +47,7 @@ def exec_cmd():
     # Command Injection
     # 2️⃣ Command Injection — /exec
     # output = subprocess.check_output(cmd, shell=True)
-    subprocess.check_output(["ping", host])
+    # subprocess.check_output(["ping", host])
     
 
 
