@@ -5,7 +5,8 @@ import logging
 import json
 import bcrypt
 from pathlib import Path
-
+from dotenv import load_dotenv
+load_dotenv()
 app = Flask(__name__)
 
 # ======================================================
