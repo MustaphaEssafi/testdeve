@@ -9,7 +9,9 @@ import logging
 app = Flask(__name__)
 
 # SECRET HARDCODÉ (mauvaise pratique)
-API_KEY = "API-KEY-123456"
+# 🧨 6️⃣ Hardcoded Secret — API_KEY
+# API_KEY = "API-KEY-123456"
+API_KEY = os.getenv("API_KEY")
 
 # Logging non sécurisé
 logging.basicConfig(level=logging.DEBUG)
@@ -78,16 +80,22 @@ def read_file():
     filename = request.json.get("filename")
 
     # Path Traversal
-    with open(filename, "r") as f:
-        return {"content": f.read()}
+    # 5️⃣ Path Traversal — /file
+    # with open(filename, "r") as f:
+            # return {"content": f.read()}
+    import os
+    BASE_DIR = "/app/files"
+    path = os.path.join(BASE_DIR, filename)
+
 
 
 @app.route("/debug", methods=["GET"])
 def debug():
     # Divulgation d'informations sensibles
+    # 🧨 7️⃣ Sensitive Data Exposure — /debug
     return {
-        "api_key": API_KEY,
-        "env": dict(os.environ),
+        # "api_key": API_KEY,
+        # "env": dict(os.environ),
         "cwd": os.getcwd()
     }
 
@@ -97,9 +105,12 @@ def log_data():
     data = request.json
 
     # Log Injection
-    logging.info(f"User input: {data}")
+    # 🧨 8️⃣ Log Injection — /log
+    # logging.info(f"User input: {data}")
+    logging.info("User data received")
     return {"status": "logged"}
 
-
+# 🧨 9️⃣ Debug Mode Enabled
+# debug=True
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
