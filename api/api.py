@@ -23,8 +23,14 @@ def auth():
     # SQL Injection
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
-    cursor.execute(query)
+    #1 MOCKEL SQL Injection — /auth
+    # query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+    # cursor.execute(query)
+
+    cursor.execute(
+    "SELECT * FROM users WHERE username=? AND password=?",
+    (username, password)
+    )
 
     if cursor.fetchone():
         return {"status": "authenticated"}
@@ -37,8 +43,10 @@ def exec_cmd():
     cmd = request.json.get("cmd")
 
     # Command Injection
-    output = subprocess.check_output(cmd, shell=True)
-    return {"output": output.decode()}
+    # 2️⃣ Command Injection — /exec
+    # output = subprocess.check_output(cmd, shell=True)
+    subprocess.check_output(["ping", host])
+    
 
 
 @app.route("/deserialize", methods=["POST"])
@@ -46,7 +54,10 @@ def deserialize():
     data = request.data
 
     # Désérialisation dangereuse
-    obj = pickle.loads(data)
+    # 3️⃣ Unsafe Deserialization — /deserialize
+    # obj = pickle.loads(data)
+    import json
+    obj = json.loads(data)
     return {"object": str(obj)}
 
 
@@ -55,7 +66,10 @@ def encrypt():
     text = request.json.get("text", "")
 
     # Chiffrement faible
-    hashed = hashlib.md5(text.encode()).hexdigest()
+    # 4️⃣ Weak Cryptography (MD5) — /encrypt
+    # hashed = hashlib.md5(text.encode()).hexdigest()
+    import bcrypt
+    hashed = bcrypt.hashpw(text.encode(), bcrypt.gensalt())
     return {"hash": hashed}
 
 
