@@ -1,0 +1,40 @@
+name: Mustapha Essafi
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: SAST - Bandit
+      run: |
+        pip install bandit
+        bandit -r api/
+
+    - name: Dependency Scan - Safety
+      run: |
+        pip install safety
+        safety check -r requirements.txt
+
+    - name: Docker Build
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: false
+        tags: devsecops-assignment:latest
